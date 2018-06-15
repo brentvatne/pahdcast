@@ -13,6 +13,7 @@ import HTMLView from 'react-native-htmlview';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import { Icon } from 'expo';
 const { Ionicons } = Icon;
+import SwipeableRow from '../components/SwipeableRow';
 
 const RSS_2_JSON_API_KEY = 'y3x8qzfkpp8qjm1rovjycxmf8522byed1i3rv2nx';
 async function fetchLatestEpisodeAsync(rssUrl) {
@@ -44,32 +45,44 @@ class Row extends React.PureComponent {
   render() {
     let { podcast } = this.props;
     return (
-      <View
-        style={{
-          borderTopWidth: StyleSheet.hairlineWidth,
-          borderTopColor: '#eee',
-        }}>
+      <SwipeableRow onDelete={this._handleDelete}>
         <View
-          style={[
-            styles.row,
-            {
-              paddingRight: 10,
-              backgroundColor: '#fafafa',
-            },
-          ]}>
-          <FadeIn>
-            <Image source={{ uri: podcast.imageUrl }} style={styles.logo} />
-          </FadeIn>
-          <View style={{ flex: 1 }}>
-            <Text numberOfLines={2} style={{ fontSize: 15, fontWeight: '500' }}>
-              {podcast.title}
-            </Text>
+          style={{
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: '#eee',
+            backgroundColor: '#fff',
+          }}>
+          <View
+            style={[
+              styles.row,
+              {
+                paddingRight: 10,
+                backgroundColor: '#fafafa',
+              },
+            ]}>
+            <FadeIn>
+              <Image source={{ uri: podcast.imageUrl }} style={styles.logo} />
+            </FadeIn>
+            <View style={{ flex: 1 }}>
+              <Text
+                numberOfLines={2}
+                style={{ fontSize: 15, fontWeight: '500' }}>
+                {podcast.title}
+              </Text>
+            </View>
           </View>
+          <View style={styles.row}>{this._maybeRenderLatestEpisode()}</View>
         </View>
-        <View style={styles.row}>{this._maybeRenderLatestEpisode()}</View>
-      </View>
+      </SwipeableRow>
     );
   }
+
+  _handleDelete = () => {
+    this.props.dispatch({
+      type: 'REMOVE_PODCAST',
+      payload: this.props.podcast,
+    });
+  };
 
   _maybeRenderLatestEpisode = () => {
     if (!this.state.latestEpisode) {
@@ -88,7 +101,7 @@ class Row extends React.PureComponent {
         <View style={{ flex: 1 }}>
           <Text>{this.state.latestEpisode.title}</Text>
         </View>
-        <Ionicons name="ios-arrow-forward" size={20} />
+        <Ionicons name="ios-arrow-forward" size={20} color="#ccc" />
       </RectButton>
     );
   };
