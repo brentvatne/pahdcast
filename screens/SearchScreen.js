@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Constants } from 'expo';
 import { connect } from 'react-redux';
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import FadeIn from 'react-native-fade-in-image';
 import SearchLayout from 'react-navigation-addon-search-layout';
 
@@ -55,6 +55,8 @@ class SearchScreen extends React.Component {
           data={this.state.podcasts}
           keyExtractor={item => item.id.toString()}
           renderItem={this._renderItem}
+          renderScrollComponent={props => <ScrollView {...props} />}
+          contentContainerStyle={{paddingBottom: this.props.isPlayerActive ? 70 : 0}}
           style={{ flex: 1 }}
         />
       </SearchLayout>
@@ -76,6 +78,7 @@ class SearchScreen extends React.Component {
 
   _addItem = item => {
     this.props.dispatch({ type: 'ADD_PODCAST', payload: item });
+    alert(`Added ${item.title} to your list!`);
   };
 
   _handleQueryChange = searchText => {
@@ -88,7 +91,9 @@ class SearchScreen extends React.Component {
   };
 }
 
-export default connect()(SearchScreen);
+export default connect(state => ({
+  isPlayerActive: !!state.selectedEpisode
+}))(SearchScreen);
 
 const styles = StyleSheet.create({
   row: {

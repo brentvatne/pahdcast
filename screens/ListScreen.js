@@ -4,14 +4,15 @@ import {
   AsyncStorage,
   FlatList,
   Image,
-  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
 import HTMLView from 'react-native-htmlview';
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { Icon } from 'expo';
+const { Ionicons } = Icon;
 
 const RSS_2_JSON_API_KEY = 'y3x8qzfkpp8qjm1rovjycxmf8522byed1i3rv2nx';
 async function fetchLatestEpisodeAsync(rssUrl) {
@@ -43,14 +44,24 @@ class Row extends React.PureComponent {
   render() {
     let { podcast } = this.props;
     return (
-      <View>
+      <View
+        style={{
+          borderTopWidth: StyleSheet.hairlineWidth,
+          borderTopColor: '#eee',
+        }}>
         <View
-          style={[styles.row, { paddingRight: 10 }]}>
+          style={[
+            styles.row,
+            {
+              paddingRight: 10,
+              backgroundColor: '#fafafa',
+            },
+          ]}>
           <FadeIn>
             <Image source={{ uri: podcast.imageUrl }} style={styles.logo} />
           </FadeIn>
           <View style={{ flex: 1 }}>
-            <Text numberOfLines={2}>
+            <Text numberOfLines={2} style={{ fontSize: 15, fontWeight: '500' }}>
               {podcast.title}
             </Text>
           </View>
@@ -69,12 +80,15 @@ class Row extends React.PureComponent {
       <RectButton
         style={{
           padding: 10,
-          backgroundColor: '#fafafa',
+          paddingVertical: 15,
           flex: 1,
-          marginBottom: 20,
+          flexDirection: 'row',
         }}
         onPress={this._playLatestEpisodeAsync}>
-        <Text>{this.state.latestEpisode.title}</Text>
+        <View style={{ flex: 1 }}>
+          <Text>{this.state.latestEpisode.title}</Text>
+        </View>
+        <Ionicons name="ios-arrow-forward" size={20} />
       </RectButton>
     );
   };
@@ -95,7 +109,11 @@ class ListScreen extends React.Component {
         keyExtractor={item => item.id.toString()}
         renderItem={this._renderItem}
         style={styles.container}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { paddingBottom: this.props.isPlayerActive ? 70 : 0 },
+        ]}
+        renderScrollComponent={props => <ScrollView {...props} />}
       />
     );
   }
@@ -103,7 +121,10 @@ class ListScreen extends React.Component {
   _renderItem = ({ item }) => <Row podcast={item} />;
 }
 
-export default connect(state => ({ podcasts: state.podcasts }))(ListScreen);
+export default connect(state => ({
+  podcasts: state.podcasts,
+  isPlayerActive: !!state.selectedEpisode,
+}))(ListScreen);
 
 const styles = StyleSheet.create({
   container: {

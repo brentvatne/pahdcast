@@ -25,7 +25,7 @@ class Player extends React.Component {
   }
 
   render() {
-    if (!this.props.selectedEpisode) {
+    if (!this.state.selectedEpisode) {
       return null;
     }
 
@@ -64,17 +64,17 @@ class Player extends React.Component {
             )}
           </View>
           <Text style={{ color: '#fff', fontSize: 15 }}>
-            {this.props.selectedEpisode.title}
+            {this.state.selectedEpisode.title}
           </Text>
         </View>
       </View>
     );
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (
-      prevProps.selectedEpisode != this.props.selectedEpisode &&
-      this.props.selectedEpisode
+      prevState.selectedEpisode != this.state.selectedEpisode &&
+      this.state.selectedEpisode
     ) {
       this._playAsync();
     }
@@ -111,7 +111,7 @@ class Player extends React.Component {
       } else {
         this.soundObject = new Expo.Audio.Sound();
       }
-      let uri = this.props.selectedEpisode.enclosure.link;
+      let uri = this.state.selectedEpisode.enclosure.link;
       this.setState({ status: 'loading' });
       try {
         await this.soundObject.loadAsync({ uri });
