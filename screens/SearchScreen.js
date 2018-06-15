@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Platform,
   Image,
@@ -45,23 +46,40 @@ class SearchScreen extends React.Component {
         headerBackgroundColor="#fff"
         headerTintColor="#000"
         onChangeQuery={this._handleQueryChange}
-        onSubmit={this._executeSearch}
-        searchInputSelectionColor="#fff"
-        searchInputTextColor={Platform.OS === 'android' ? '#fff' : 'black'}
-        searchInputPlaceholderTextColor={
-          Platform.OS === 'ios' ? '#898989' : '#fafafa'
-        }>
+        onSubmit={this._executeSearch}>
         <FlatList
           data={this.state.podcasts}
           keyExtractor={item => item.id.toString()}
           renderItem={this._renderItem}
           renderScrollComponent={props => <ScrollView {...props} />}
-          contentContainerStyle={{paddingBottom: this.props.isPlayerActive ? 70 : 0}}
+          contentContainerStyle={{
+            paddingBottom: this.props.isPlayerActive ? 70 : 0,
+          }}
           style={{ flex: 1 }}
         />
+        {this._maybeRenderLoading()}
       </SearchLayout>
     );
   }
+
+  _maybeRenderLoading = () => {
+    if (this.state.loading) {
+      return (
+        <View
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingBottom: 80,
+            },
+          ]}>
+          <ActivityIndicator color="#fff" />
+        </View>
+      );
+    }
+  };
 
   _renderItem = ({ item }) => {
     return (
@@ -77,8 +95,12 @@ class SearchScreen extends React.Component {
   };
 
   _addItem = item => {
-    this.props.dispatch({ type: 'ADD_PODCAST', payload: item });
-    alert(`Added ${item.title} to your list!`);
+    if (this.props.podcasts.find(p => p.id === item.id)) {
+      alert(`${item.title} is already in your list!`);
+    } else {
+      this.props.dispatch({ type: 'ADD_PODCAST', payload: item });
+      alert(`Added ${item.title} to your list!`);
+    }
   };
 
   _handleQueryChange = searchText => {
@@ -86,13 +108,19 @@ class SearchScreen extends React.Component {
   };
 
   _executeSearch = async () => {
-    let podcasts = await searchPodcastsAsync(this.state.searchText);
-    this.setState({ podcasts });
+    this.setState({ loading: true });
+    try {
+      let podcasts = await searchPodcastsAsync(this.state.searchText);
+      this.setState({ podcasts });
+    } finally {
+      this.setState({ loading: false });
+    }
   };
 }
 
 export default connect(state => ({
-  isPlayerActive: !!state.selectedEpisode
+  podcasts: state.podcasts,
+  isPlayerActive: !!state.selectedEpisode,
 }))(SearchScreen);
 
 const styles = StyleSheet.create({

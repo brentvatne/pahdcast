@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ActivityIndicator, View, Text } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
+import { BorderlessButton } from 'react-native-gesture-handler';
 import { Icon } from 'expo';
 const { Ionicons } = Icon;
 
@@ -39,6 +39,7 @@ class Player extends React.Component {
           backgroundColor: '#000',
           paddingHorizontal: 15,
           justifyContent: 'center',
+          paddingBottom: 5,
           height: 60,
         }}>
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
@@ -52,7 +53,9 @@ class Player extends React.Component {
             {this.state.status === 'loading' ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <RectButton onPress={this._handleButtonPress}>
+              <BorderlessButton
+                onPress={this._handleButtonPress}
+                hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
                 <Ionicons
                   name={
                     this.state.status === 'playing' ? 'ios-pause' : 'ios-play'
@@ -60,7 +63,7 @@ class Player extends React.Component {
                   size={25}
                   color="#fff"
                 />
-              </RectButton>
+              </BorderlessButton>
             )}
           </View>
           <Text style={{ color: '#fff', fontSize: 15 }}>

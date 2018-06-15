@@ -4669,9 +4669,9 @@ react-native-vector-icons@4.5.0:
     xmldoc "^0.4.0"
     yargs "^9.0.0"
 
-react-navigation-addon-search-layout@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-addon-search-layout/-/react-navigation-addon-search-layout-0.9.0.tgz#97bdde4b2fba6eff133d0553ab6b0045277ef983"
+react-navigation-addon-search-layout@0.10.0:
+  version "0.10.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-addon-search-layout/-/react-navigation-addon-search-layout-0.10.0.tgz#1f606277ae8c822cf34038d6ef6854fdef5ee069"
   dependencies:
     react-native-platform-touchable "^1.1.1"
 

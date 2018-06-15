@@ -32,6 +32,10 @@ const getInitialState = () => {
 };
 
 function addPodcast(state, podcast) {
+  if (state.podcasts.find(p => p.id === podcast.id)) {
+    return state;
+  }
+
   return {
     ...state,
     podcasts: [...state.podcasts, podcast],
@@ -42,7 +46,7 @@ function selectEpisode(state, episode) {
   return {
     ...state,
     selectedEpisode: episode,
-  }
+  };
 }
 
 function removePodcast(state, id) {
@@ -59,7 +63,10 @@ function persistedStateIsInvalid(state) {
 }
 
 const Store = createStore(
-  persistReducer({ key: 'root', storage, blacklist: ['selectedEpisode'], version: 1 }, reducer),
+  persistReducer(
+    { key: 'root', storage, blacklist: ['selectedEpisode'], version: 1 },
+    reducer
+  ),
   getInitialState()
 );
 
