@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { ActivityIndicator, View, Text } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-navigation';
 import { Icon } from 'expo';
 const { Ionicons } = Icon;
 
@@ -30,7 +31,7 @@ class Player extends React.Component {
     }
 
     return (
-      <View
+      <SafeAreaView
         style={{
           position: 'absolute',
           bottom: 0,
@@ -70,7 +71,7 @@ class Player extends React.Component {
             {this.state.selectedEpisode.title}
           </Text>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 

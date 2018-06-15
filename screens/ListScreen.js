@@ -116,6 +116,10 @@ class Row extends React.PureComponent {
 
 class ListScreen extends React.Component {
   render() {
+    if (!this.props.podcasts.length) {
+      return this._renderEmptyState();
+    }
+
     return (
       <FlatList
         data={this.props.podcasts}
@@ -130,6 +134,17 @@ class ListScreen extends React.Component {
       />
     );
   }
+
+  _renderEmptyState = () => {
+    return (
+      <View style={{ flex: 1, paddingTop: 30, paddingHorizontal: 20 }}>
+        <Text style={{ textAlign: 'center', color: '#888' }}>
+          Oh no! You don't have any podcasts on your list. Hit the search button
+          up on the right to find one, then tap on it to add it.
+        </Text>
+      </View>
+    );
+  };
 
   _renderItem = ({ item }) => <Row podcast={item} />;
 }
