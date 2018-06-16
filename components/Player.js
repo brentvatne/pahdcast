@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-navigation';
 import { Icon } from 'expo';
 const { Ionicons } = Icon;
 
+import Layout from '../constants/Layout';
+
 class Player extends React.Component {
   state = {
     status: 'stopped',
@@ -41,35 +43,43 @@ class Player extends React.Component {
           paddingHorizontal: 15,
           justifyContent: 'center',
           paddingBottom: 5,
-          height: 60,
+          height: Layout.playerHeight,
         }}>
         <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-          <View
-            style={{
-              paddingRight: 20,
-              paddingTop: 3,
-              width: 35,
-              justifyContent: 'center',
-            }}>
-            {this.state.status === 'loading' ? (
+          {this.state.status === 'loading' ? (
+            <View
+              style={{
+                paddingRight: 20,
+                paddingTop: 13,
+                paddingBottom: 10,
+                width: 35,
+                justifyContent: 'center',
+              }}>
               <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <BorderlessButton
-                onPress={this._handleButtonPress}
-                hitSlop={{ top: 20, left: 20, right: 20, bottom: 20 }}>
-                <Ionicons
-                  name={
-                    this.state.status === 'playing' ? 'ios-pause' : 'ios-play'
-                  }
-                  size={25}
-                  color="#fff"
-                />
-              </BorderlessButton>
-            )}
+            </View>
+          ) : (
+            <BorderlessButton
+              style={{
+                paddingRight: 20,
+                paddingTop: 3,
+                width: 35,
+                justifyContent: 'center',
+              }}
+              onPress={this._handleButtonPress}>
+              <Ionicons
+                name={
+                  this.state.status === 'playing' ? 'ios-pause' : 'ios-play'
+                }
+                size={25}
+                color="#fff"
+              />
+            </BorderlessButton>
+          )}
+          <View style={{ flex: 1 }}>
+            <Text style={{ color: '#fff', fontSize: 15 }} numberOfLines={2}>
+              {this.state.selectedEpisode.title}
+            </Text>
           </View>
-          <Text style={{ color: '#fff', fontSize: 15 }}>
-            {this.state.selectedEpisode.title}
-          </Text>
         </View>
       </SafeAreaView>
     );
@@ -111,10 +121,14 @@ class Player extends React.Component {
       }
     } else {
       if (this.soundObject) {
+        if (this.state.status === 'loading') {
+          await this.soundObject.stopAsync();
+        }
         await this.soundObject.unloadAsync();
       } else {
         this.soundObject = new Expo.Audio.Sound();
       }
+
       let uri = this.state.selectedEpisode.enclosure.link;
       this.setState({ status: 'loading' });
       try {
@@ -122,7 +136,9 @@ class Player extends React.Component {
         this.setState({ status: 'playing', loaded: true });
         await this.soundObject.playAsync();
       } catch (e) {
-        alert(e.message);
+        if (__DEV__) {
+          alert(e.message);
+        }
       }
     }
   };

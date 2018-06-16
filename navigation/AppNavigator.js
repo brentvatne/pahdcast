@@ -1,13 +1,6 @@
 import React from 'react';
 import { Animated, Platform } from 'react-native';
-import {
-  createStackNavigator,
-  createSwitchNavigator,
-  createBottomTabNavigator,
-} from 'react-navigation';
-
-import HeaderButtons from 'react-navigation-header-buttons';
-import { Icon } from 'expo';
+import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
 
 import ListScreen from '../screens/ListScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -18,7 +11,6 @@ const ListSearchSwitch = createStackNavigator(
     Search: SearchScreen,
   },
   {
-    headerMode: 'none',
     cardStyle: {
       backgroundColor: '#fafafa',
     },
@@ -31,31 +23,6 @@ const ListSearchSwitch = createStackNavigator(
   }
 );
 
-ListSearchSwitch.navigationOptions = ({ navigation }) => {
-  if (navigation.state.routes[navigation.state.index].routeName === 'List') {
-    return {
-      headerTitle: 'Latest',
-      headerRight: (
-        <HeaderButtons IconComponent={Icon.Ionicons} iconSize={23} color="#000">
-          <HeaderButtons.Item
-            title="search"
-            iconName="ios-search"
-            onPress={() => navigation.navigate('Search')}
-          />
-        </HeaderButtons>
-      ),
-    };
-  } else {
-    return {
-      header: null,
-    };
-  }
-};
-
-const MainStack = createStackNavigator({
-  ListAndSearch: ListSearchSwitch,
-});
-
 export default createSwitchNavigator({
-  Main: MainStack,
+  ListAndSearch: ListSearchSwitch,
 });

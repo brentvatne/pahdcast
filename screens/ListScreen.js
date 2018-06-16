@@ -9,11 +9,13 @@ import {
   View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import HTMLView from 'react-native-htmlview';
-import { RectButton, ScrollView } from 'react-native-gesture-handler';
+import { BorderlessButton, ScrollView } from 'react-native-gesture-handler';
+import HeaderButtons from 'react-navigation-header-buttons';
 import { Icon } from 'expo';
 const { Ionicons } = Icon;
+
 import SwipeableRow from '../components/SwipeableRow';
+import Layout from '../constants/Layout';
 
 const RSS_2_JSON_API_KEY = 'y3x8qzfkpp8qjm1rovjycxmf8522byed1i3rv2nx';
 async function fetchLatestEpisodeAsync(rssUrl) {
@@ -46,33 +48,38 @@ class Row extends React.PureComponent {
     let { podcast } = this.props;
     return (
       <SwipeableRow onDelete={this._handleDelete}>
-        <View
-          style={{
-            borderTopWidth: StyleSheet.hairlineWidth,
-            borderTopColor: '#eee',
-            backgroundColor: '#fff',
-          }}>
+        <BorderlessButton
+          onPress={
+            this.state.latestEpisode ? this._playLatestEpisodeAsync : null
+          }>
           <View
-            style={[
-              styles.row,
-              {
-                paddingRight: 10,
-                backgroundColor: '#fafafa',
-              },
-            ]}>
-            <FadeIn>
-              <Image source={{ uri: podcast.imageUrl }} style={styles.logo} />
-            </FadeIn>
-            <View style={{ flex: 1 }}>
-              <Text
-                numberOfLines={2}
-                style={{ fontSize: 15, fontWeight: '500' }}>
-                {podcast.title}
-              </Text>
+            style={{
+              borderTopWidth: StyleSheet.hairlineWidth,
+              borderTopColor: '#eee',
+              backgroundColor: '#fff',
+            }}>
+            <View
+              style={[
+                styles.row,
+                {
+                  paddingRight: 10,
+                  backgroundColor: '#fafafa',
+                },
+              ]}>
+              <FadeIn>
+                <Image source={{ uri: podcast.imageUrl }} style={styles.logo} />
+              </FadeIn>
+              <View style={{ flex: 1 }}>
+                <Text
+                  numberOfLines={2}
+                  style={{ fontSize: 15, fontWeight: '500' }}>
+                  {podcast.title}
+                </Text>
+              </View>
             </View>
+            <View style={styles.row}>{this._maybeRenderLatestEpisode()}</View>
           </View>
-          <View style={styles.row}>{this._maybeRenderLatestEpisode()}</View>
-        </View>
+        </BorderlessButton>
       </SwipeableRow>
     );
   }
@@ -90,19 +97,19 @@ class Row extends React.PureComponent {
     }
 
     return (
-      <RectButton
+      <View
         style={{
-          padding: 10,
+          paddingLeft: 5,
           paddingVertical: 15,
+          paddingRight: 15,
           flex: 1,
           flexDirection: 'row',
-        }}
-        onPress={this._playLatestEpisodeAsync}>
+        }}>
         <View style={{ flex: 1 }}>
           <Text>{this.state.latestEpisode.title}</Text>
         </View>
         <Ionicons name="ios-arrow-forward" size={20} color="#ccc" />
-      </RectButton>
+      </View>
     );
   };
 
@@ -115,6 +122,19 @@ class Row extends React.PureComponent {
 }
 
 class ListScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => ({
+    headerTitle: 'Latest',
+    headerRight: (
+      <HeaderButtons IconComponent={Icon.Ionicons} iconSize={23} color="#000">
+        <HeaderButtons.Item
+          title="search"
+          iconName="ios-search"
+          onPress={() => navigation.navigate('Search')}
+        />
+      </HeaderButtons>
+    ),
+  });
+
   render() {
     if (!this.props.podcasts.length) {
       return this._renderEmptyState();
@@ -128,7 +148,11 @@ class ListScreen extends React.Component {
         style={styles.container}
         contentContainerStyle={[
           styles.contentContainer,
-          { paddingBottom: this.props.isPlayerActive ? 70 : 0 },
+          {
+            paddingBottom: this.props.isPlayerActive
+              ? Layout.bottomInsetForPlayer
+              : Layout.defaultBottomInset,
+          },
         ]}
         renderScrollComponent={props => <ScrollView {...props} />}
       />

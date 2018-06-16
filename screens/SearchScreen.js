@@ -14,6 +14,8 @@ import { RectButton, ScrollView } from 'react-native-gesture-handler';
 import FadeIn from 'react-native-fade-in-image';
 import SearchLayout from 'react-navigation-addon-search-layout';
 
+import Layout from '../constants/Layout';
+
 function resultToPodcast(result) {
   return {
     id: result.collectionId,
@@ -34,6 +36,10 @@ async function searchPodcastsAsync(term) {
 }
 
 class SearchScreen extends React.Component {
+  static navigationOptions = {
+    header: null,
+  };
+
   state = {
     podcasts: [],
     searchText: '',
@@ -53,7 +59,9 @@ class SearchScreen extends React.Component {
           renderItem={this._renderItem}
           renderScrollComponent={props => <ScrollView {...props} />}
           contentContainerStyle={{
-            paddingBottom: this.props.isPlayerActive ? 70 : 0,
+            paddingBottom: this.props.isPlayerActive
+              ? Layout.bottomInsetForPlayer
+              : Layout.defaultBottomInset,
           }}
           style={{ flex: 1 }}
         />
