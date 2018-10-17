@@ -1,11 +1,15 @@
 import React from 'react';
 import { Animated, Platform } from 'react-native';
-import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
+import {
+  createAppContainer,
+  createStackNavigator,
+  createSwitchNavigator,
+} from 'react-navigation';
 
 import ListScreen from '../screens/ListScreen';
 import SearchScreen from '../screens/SearchScreen';
 
-const ListSearchSwitch = createStackNavigator(
+const Navigator = createStackNavigator(
   {
     List: ListScreen,
     Search: SearchScreen,
@@ -14,15 +18,22 @@ const ListSearchSwitch = createStackNavigator(
     cardStyle: {
       backgroundColor: '#fafafa',
     },
-    transitionConfig: () => ({
-      transitionSpec: {
-        duration: 0,
-        timing: Animated.timing,
-      },
-    }),
+    transitionConfig: (transitionProps, prevTransitionProps) => {
+      const destinationRoute = transitionProps.scene.route.routeName;
+      const previousRoute = prevTransitionProps
+        ? prevTransitionProps.scene.route.routeName
+        : null;
+
+      if ([destinationRoute, previousRoute].includes('Search')) {
+        return {
+          transitionSpec: {
+            duration: 0,
+            timing: Animated.timing,
+          },
+        };
+      }
+    },
   }
 );
 
-export default createSwitchNavigator({
-  ListAndSearch: ListSearchSwitch,
-});
+export default createAppContainer(Navigator);
